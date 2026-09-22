@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 
 from app.market_api import fetch_fund
-from app.market_db import get_recent_nav, save_fund
+from app.market_db import get_recent_nav, one_year_min_max_nav, save_fund
 
 
 def main() -> None:
@@ -21,6 +21,11 @@ def main() -> None:
     print("Recent NAV:")
     for nav_date, nav in recent_nav:
         print(f"  {nav_date}: {nav}")
+
+    one_year_low_high = one_year_min_max_nav(fund_id, end_date='2025-10-31')
+    print("\nOne-year low and high NAVs:")
+    for max_nav, min_nav, fund_id in one_year_low_high:
+        print(f"  Fund {fund_id}: low={min_nav:.6f}, high={max_nav:.6f}")
 
 
 if __name__ == "__main__":
