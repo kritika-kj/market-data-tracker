@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Market Data Tracker</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="/assets/dashboard.js" defer></script>
+</head>
+<body class="dashboard-body">
+  <header class="dashboard-header">
+    <a class="dashboard-brand" href="/dashboard"><span class="brand-mark">MD</span> Market Data Tracker</a>
+    <div class="user-menu"><span id="user-name"></span><span id="user-role" class="role-pill"></span><button id="logout-button" class="text-button">Sign out</button></div>
+  </header>
+  <main class="dashboard-main">
+    <section class="dashboard-intro">
+      <div><p class="eyebrow">Your workspace</p><h1 id="dashboard-title">Dashboard</h1><p id="dashboard-description"></p></div>
+      <div class="data-control"><label for="scheme-code">Scheme code</label><input id="scheme-code" value="119551" inputmode="numeric" /><button id="load-data" class="primary-button">Load NAV <span aria-hidden="true">&#8594;</span></button></div>
+    </section>
+    <section class="metrics" aria-label="NAV summary"><div class="metric"><span>Latest NAV</span><strong id="latest-nav">-</strong></div><div class="metric"><span>One-year low</span><strong id="lowest-nav">-</strong></div><div class="metric"><span>One-year high</span><strong id="highest-nav">-</strong></div></section>
+    <section class="dashboard-grid">
+      <article class="chart-card"><div class="card-heading"><div><p class="eyebrow">Performance</p><h2 id="fund-name">NAV history</h2></div><span id="data-status" class="status-text"></span></div><div class="chart-wrap"><canvas id="nav-chart"></canvas></div></article>
+      <article class="table-card"><div class="card-heading"><div><p class="eyebrow">Read only</p><h2>Recent NAV</h2></div></div><table><thead><tr><th>Date</th><th>NAV</th></tr></thead><tbody id="nav-table"></tbody></table></article>
+    </section>
+    <section id="admin-panel" class="admin-panel" hidden>
+      <p class="eyebrow">Administration</p><h2>Access control</h2><p>Create users and assign the dashboard role they need.</p>
+      <form id="create-user-form" class="admin-form">
+        <input name="email" type="email" placeholder="user@example.com" required />
+        <input name="password" type="password" placeholder="Temporary password" minlength="8" required />
+        <select name="role" required><option value="viewer">Viewer</option><option value="analyst">Analyst</option><option value="admin">Admin</option></select>
+        <button class="primary-button" type="submit">Create user <span aria-hidden="true">&#8594;</span></button>
+      </form>
+      <p id="admin-message" class="form-message" role="status"></p>
+      <table><thead><tr><th>Email</th><th>Role</th><th>Created</th></tr></thead><tbody id="user-table"></tbody></table>
+    </section>
+    <section id="analyst-panel" class="analyst-panel" hidden><p class="eyebrow">Analysis tools</p><h2>Analyst workspace</h2><p>Use the NAV history above as the base for deeper analysis and comparisons.</p></section>
+  </main>
+</body>
+</html>
