@@ -4,6 +4,7 @@ import argparse
 
 from app.market_api import fetch_fund
 from app.market_db import get_recent_nav, one_year_min_max_nav, save_fund
+from app.report import create_nav_view
 
 
 def main() -> None:
@@ -26,6 +27,9 @@ def main() -> None:
     print("\nOne-year low and high NAVs:")
     for max_nav, min_nav, fund_id in one_year_low_high:
         print(f"  Fund {fund_id}: low={min_nav:.6f}, high={max_nav:.6f}")
+
+    report_file = create_nav_view(args.scheme_code)
+    print(f"\nCreated NAV view: {report_file}")
 
 
 if __name__ == "__main__":
