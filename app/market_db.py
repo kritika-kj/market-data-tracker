@@ -47,6 +47,34 @@ def get_recent_nav(fund_id: int, limit: int = 5) -> list[tuple[date, Decimal]]:
             )
             return cursor.fetchall()
 
+
+def get_fund_id(scheme_code: str) -> int:
+    with get_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT id FROM finance.funds WHERE scheme_code = %s",
+                (scheme_code,),
+            )
+            row = cursor.fetchone()
+            if row is None:
+                raise ValueError(f"Scheme {scheme_code} is not stored in the database")
+            return row[0]
+
+
+def get_nav_history(fund_id: int) -> list[tuple[date, Decimal]]:
+    with get_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT nav_date, nav
+                FROM finance.nav_prices
+                WHERE fund_id = %s
+                ORDER BY nav_date
+                """,
+                (fund_id,),
+            )
+            return cursor.fetchall()
+
 def one_year_min_max_nav(fund_id: int, end_date: date = date(2025, 10, 31)):
     with get_connection() as connection:
         with connection.cursor() as cursor:
