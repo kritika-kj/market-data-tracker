@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Data Tracker Architecture</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+      flowchart: {
+        curve: 'basis',
+        useMaxWidth: true
+      }
+    });
+  </script>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 24px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 2rem;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      margin-bottom: 28px;
+      color: #4b5563;
+    }
+    .mermaid {
+      overflow-x: auto;
+      padding: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Market Data Tracker Architecture</h1>
+    <div class="subtitle">A simple data pipeline that fetches NAV data, validates it, stores it, and displays recent results.</div>
+
+    <div class="mermaid">
+flowchart LR
+    User[User / Analyst] --> Trigger[Manual Run]
+
+    subgraph App[Application Layer]
+        Trigger --> Ingest[Ingestion Service]
+        Ingest --> Fetch[Data Fetcher]
+        Fetch --> API[Market Data API]
+        API --> Parse[Validation & Transformation]
+        Parse --> Model[Typed Data Objects]
+        Model --> Store[Persistence Layer]
+    end
+
+    subgraph Data[Data Layer]
+        Store --> DB[(Relational Database)]
+        DB --> Query[Recent NAV Query]
+    end
+
+    Query --> Report[Console Report]
+    Report --> Output[Latest NAV values]
+
+    classDef user fill:#E8F1FF,stroke:#2F5D9F,stroke-width:2px,color:#102A43;
+    classDef app fill:#EEF8F1,stroke:#3A7D44,stroke-width:1px,color:#173B1A;
+    classDef data fill:#FFF4DF,stroke:#B7791F,stroke-width:1px,color:#4A2B00;
+    classDef output fill:#F8EDFF,stroke:#7B4397,stroke-width:1px,color:#32143F;
+
+    class User,Trigger user;
+    class Ingest,Fetch,Parse,Model,Store app;
+    class API,DB,Query data;
+    class Report,Output output;
+    </div>
+  </div>
+</body>
+</html>

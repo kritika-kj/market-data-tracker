@@ -1,0 +1,167 @@
+MARKET DATA TRACKER - COMMAND REFERENCE
+========================================
+
+Run all commands from the project root:
+C:\Users\kriti\market-data-tracker
+
+1. CREATE THE VIRTUAL ENVIRONMENT
+---------------------------------
+py -m venv .venv
+
+2. ACTIVATE THE VIRTUAL ENVIRONMENT
+-----------------------------------
+PowerShell:
+.\.venv\Scripts\Activate.ps1
+
+If PowerShell blocks script execution, run this for the current terminal only:
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\.venv\Scripts\Activate.ps1
+
+3. INSTALL DEPENDENCIES
+-----------------------
+python -m pip install -r requirements.txt
+
+Or use the virtual environment Python directly without activating it:
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+
+4. CREATE THE LOCAL ENVIRONMENT FILE
+------------------------------------
+Copy-Item .env.example .env
+
+Then edit .env and set the real PostgreSQL password:
+notepad .env
+
+Never commit .env or store the database password in source code.
+
+5. INITIALIZE THE DATABASE TABLES
+---------------------------------
+python -m app.init_db
+
+Without activating the virtual environment:
+.\.venv\Scripts\python.exe -m app.init_db
+
+This creates or verifies:
+- finance.funds
+- finance.nav_prices
+
+6. FETCH AND STORE A FUND'S NAV HISTORY
+---------------------------------------
+Default scheme code (119551):
+python -m app.ingest
+
+Specific scheme code:
+python -m app.ingest 119551
+
+Without activating the virtual environment:
+.\.venv\Scripts\python.exe -m app.ingest 119551
+
+This command:
+- calls the mutual fund API
+- parses fund metadata and NAV records
+- upserts the fund in PostgreSQL
+- upserts daily NAV values
+- prints recent NAV values
+- prints the one-year low and high NAV
+
+The command can be run repeatedly without creating duplicate NAV dates.
+
+7. CREATE THE HTML NAV GRAPH
+----------------------------
+Default scheme code (119551):
+python -m app.report
+
+Specific scheme code:
+python -m app.report 119551
+
+Without activating the virtual environment:
+.\.venv\Scripts\python.exe -m app.report 119551
+
+The generated view is:
+data\nav_view.html
+
+Open the generated HTML file:
+Start-Process .\data\nav_view.html
+
+You can also open data\nav_view.html directly in a browser.
+
+8. OPEN THE FRONTEND LOGIN PAGE
+-------------------------------
+Open the login page directly:
+Start-Process .\frontend\login.html
+
+The login prototype currently supports:
+- email and password fields
+- password visibility toggle
+- Analyst, Admin, and Viewer role selection
+- responsive desktop and mobile layout
+- role-based authentication and dashboard navigation through Flask
+
+9. INITIALIZE AUTHENTICATION TABLES
+-----------------------------------
+Run after updating sql\schema.sql:
+python -m app.init_db
+
+10. CREATE OR UPDATE A USER
+---------------------------
+The password is entered securely at the prompt and is stored only as a scrypt hash.
+
+Admin:
+python -m app.create_user admin@example.com admin
+
+Analyst:
+python -m app.create_user analyst@example.com analyst
+
+Viewer:
+python -m app.create_user viewer@example.com viewer
+
+11. START THE WEB APPLICATION
+-----------------------------
+Set APP_SECRET_KEY in .env, then run:
+python -m app.web
+
+Open the application:
+Start-Process http://127.0.0.1:5000
+
+The authenticated role is read from finance.users. The browser cannot choose or change its role.
+
+12. VIEW AVAILABLE SCHEME CODES
+------------------------------
+PowerShell:
+$schemes = Invoke-RestMethod -Uri "https://api.mfapi.in/mf"
+$schemes | Select-Object -First 10 schemeCode, schemeName | Format-Table -AutoSize
+
+Search scheme names:
+$schemes | Where-Object { $_.schemeName -like "*Aditya Birla*" }
+
+13. VERIFY PYTHON FILES COMPILE
+------------------------------
+python -m compileall -q app
+
+Without activating the virtual environment:
+.\.venv\Scripts\python.exe -m compileall -q app
+
+14. COMPLETE NORMAL WORKFLOW
+----------------------------
+.\.venv\Scripts\Activate.ps1
+python -m app.init_db
+python -m app.ingest 119551
+python -m app.report 119551
+Start-Process .\data\nav_view.html
+
+15. TROUBLESHOOTING
+-------------------
+Check that the current folder is the project root:
+Get-Location
+
+Check the Python executable being used:
+Get-Command python
+python --version
+
+Check that the virtual environment Python exists:
+Test-Path .\.venv\Scripts\python.exe
+
+If the error says "No module named 'app'", run commands from the project root and use:
+.\.venv\Scripts\python.exe -m app.ingest 119551
+
+Do not launch the package files directly like this:
+python app\ingest.py
